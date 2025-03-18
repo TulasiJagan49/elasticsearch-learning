@@ -1,21 +1,15 @@
-from pprint import pprint
-from elasticsearch import Elasticsearch
-
-
-es = Elasticsearch('http://localhost:9200')
-client_info = es.info()
-print('Connected to Elasticsearch!')
-pprint(client_info.body)
-
-print(es.indices.get_alias())
-
-es.indices.delete(index='sample_index', ignore_unavailable=True)
-es.indices.create(index='sample_index')
-
 import json
+from pprint import pprint
+
+from elasticsearch_connection import connect_to_es
+from create_index import create_index
+
+
+es = connect_to_es('http://localhost:9200')
+create_index(es, "sample_index")
 
 document_ids = []
-dummy_data = json.load(open('dummy_data.json'))
+dummy_data = json.load(open('dummy_data.json', encoding='utf-8'))
 for document in dummy_data:
     response = es.index(index='sample_index', body=document)
     document_ids.append(response['_id'])
